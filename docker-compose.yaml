@@ -1,0 +1,134 @@
+version: "3.9"
+services:
+  postgres:
+    container_name: postgres_container
+    image: postgres:16
+    command:
+      - "postgres"
+      - "-c"
+      - "max_connections=500"
+      - "-c"
+      - "shared_buffers=2GB"
+      - "-c"
+      - "effective_cache_size=8GB"
+      - "-c"
+      - "work_mem=16MB"
+      - "-c"
+      - "maintenance_work_mem=512MB"
+      - "-c"
+      - "random_page_cost=1.1"
+      - "-c"
+      - "temp_file_limit=10GB"
+      - "-c"
+      - "log_min_duration_statement=200ms"
+      - "-c"
+      - "idle_in_transaction_session_timeout=10s"
+      - "-c"
+      - "lock_timeout=1s"
+      - "-c"
+      - "statement_timeout=60s"
+      - "-c"
+      - "shared_preload_libraries=pg_stat_statements"
+      - "-c"
+      - "pg_stat_statements.max=10000"
+      - "-c"
+      - "pg_stat_statements.track=all"
+    environment:
+      POSTGRES_DB: "mbit"
+      POSTGRES_USER: "mbitadmin"
+      POSTGRES_PASSWORD: "Frdfkfyu2023!"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+      COMPOSE_PROJECT_NAME: 'bpm'
+    volumes:
+      - ./db/init:/docker-entrypoint-initdb.d
+      - ./db/data/:/var/lib/postgresql/data
+      # - bpm-data-new:/var/lib/postgresql/data
+    #ports:
+    #  - "5432:5432"
+    networks:
+      proxy-network:
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mbitadmin -d mbot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '8'
+          memory: 16G
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4:8.12
+    environment:
+      COMPOSE-PROJECT: bpm
+      PGADMIN_DEFAULT_EMAIL: "4468618@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: Frdfkfyu2023!
+      #- PGADMIN_CONFIG_SERVER_MODE: False
+    volumes:
+      - pgadmin-data1:/var/lib/pgadmin
+    networks:
+      proxy-network:
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+    depends_on:
+      - postgres
+  redis:
+    image: redis:latest
+    container_name: redis_container
+    restart: always
+    #ports:
+    #  - "6379:6379"  # Expose Redis on the default port
+    networks:
+      proxy-network:
+    environment:
+      REDIS_REPLICATION_MODE: standalone
+      COMPOSE_PROJECT_NAME: bpm
+    volumes:
+      - redis-data:/data
+  mbot-bpm-invoice:
+    container_name: mbot-bpm-invoice
+    build:
+      context: build
+      dockerfile: Dockerfile.v8
+    image: bpm
+    restart: unless-stopped
+    environment:
+      COMPOSE-PROJECT: bpm
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "5002:5002"
+    networks:
+      proxy-network:
+
+    #deploy:
+    #  resources:
+    #    limits:
+    #      cpus: '8'
+    #      memory: 16G
+
+volumes:
+  bpm-data:
+  bpm-data-new:
+  pgadmin-data:
+  pgadmin-data1:
+  redis-data:
+
+networks:
+  proxy-network:
+    external: true
+#    driver: bridge
+#    ipam:
+#      config:
+#        - subnet: 172.26.0.0/24
+#          gateway: 172.26.0.1
+#          aux_addresses:
+#            dns: 172.26.0.1
