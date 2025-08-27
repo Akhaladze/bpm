@@ -48,10 +48,46 @@ flowchart TB
     creatio --> pg
     creatio --> es
     creatio --> mlapi
+```
 
+### 2. Authentication Flow (OIDC)
 
+```mermaid
 
+sequenceDiagram
+    participant U as User
+    participant N as NGINX
+    participant K as Keycloak
+    participant C as Creatio
 
+    U->>N: Request /app
+    N-->>U: Redirect to Keycloak
+    U->>K: Login credentials
+    K-->>U: Auth code
+    U->>N: Callback with code
+    N->>K: Exchange code for tokens
+    K-->>N: JWT tokens
+    N->>C: Forward request + token
+    C-->>N: Response
+    N-->>U: Content
+```
+
+### 3. CI/CD Pipeline
+
+```mermaid
+
+flowchart LR
+    dev[Developer] --> gh[GitHub Repo]
+    gh --> actions[CI Pipeline]
+    actions --> build[Docker Build]
+    build --> registry[(Registry)]
+    registry --> deploy[Deploy with Compose]
+    deploy --> creatio[Creatio BPM Stack]
+```
+
+### 4. Analytics & ML Flow
+
+```mermaid
 
 flowchart TB
     creatio[Creatio BPM]
@@ -67,3 +103,5 @@ flowchart TB
     creatio --> logs --> es --> kib
     es --> ml
     ml --> creatio
+
+```
