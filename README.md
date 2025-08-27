@@ -8,7 +8,7 @@ Infra: Docker Compose, Redis, PostgreSQL, NGINX; optional: Keycloak, ELK, Promet
 ```bash
 chmod +x build.sh
 ./build.sh up
-
+```
 
 ## 📊 Architecture Diagrams
 
