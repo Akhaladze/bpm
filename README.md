@@ -48,3 +48,22 @@ flowchart TB
     creatio --> pg
     creatio --> es
     creatio --> mlapi
+
+
+
+
+
+flowchart TB
+    creatio[Creatio BPM]
+    pg[(PostgreSQL)]
+    redis[(Redis Cache)]
+    logs[Logs/Events]
+    es[(Elasticsearch)]
+    kib[Kibana]
+    ml[ML/AI Service]
+
+    creatio --> pg
+    creatio --> redis
+    creatio --> logs --> es --> kib
+    es --> ml
+    ml --> creatio
