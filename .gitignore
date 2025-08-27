@@ -175,3 +175,4 @@ cython_debug/
 /build/src/*.tar.gz
 /build/src/*.tar
 /build/core/*
+bpm.backup
