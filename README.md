@@ -15,38 +15,69 @@ chmod +x build.sh
 
 ```mermaid
 flowchart TB
+    %% Clients
     user[User / Browser]
     mobile[Mobile Client]
     api[3rd-party Service]
 
+    %% Edge & Security
     subgraph Edge["Ingress & Security"]
-      nginx[NGINX Reverse Proxy]
-      keycloak[Keycloak SSO / OIDC]
+      nginx[NGINX Reverse Proxy<br/>TLS termination, WAF, rate limit]
+      keycloak[Keycloak<br/>SSO / OIDC]
     end
 
+    %% Application
     subgraph App["Application Layer"]
       creatio[Creatio BPM 8.2.3]
       redis[(Redis Cache)]
     end
 
+    %% Data & Search
     subgraph Data["Data Stores & Search"]
       pg[(PostgreSQL)]
       es[(Elasticsearch)]
     end
 
-    subgraph ML["ML/AI Services"]
-      mlapi[ML API (Python/FastAPI)]
+    %% AI/ML
+    subgraph ML["ML / AI Services"]
+      mlapi[ML API<br/>Python & FastAPI]
+      models[(Models / Artifacts)]
     end
 
-    user --> nginx
-    mobile --> nginx
-    api --> nginx
-    nginx --> keycloak
+    %% Observability
+    subgraph Obs["Observability"]
+      logstash[Logstash]
+      kibana[Kibana]
+      prom[Prometheus]
+      grafana[Grafana]
+    end
+
+    %% Flows
+    user -->|HTTPS| nginx
+    mobile -->|HTTPS| nginx
+    api -->|API| nginx
+
+    nginx -->|OIDC redirect| keycloak
+    keycloak -->|JWT / OIDC tokens| nginx
+
     nginx --> creatio
     creatio --> redis
     creatio --> pg
-    creatio --> es
-    creatio --> mlapi
+    creatio -->|Search API| es
+
+    creatio <-->|Inference API| mlapi
+    mlapi --> models
+
+    %% Logs & Metrics
+    nginx -->|Access / App logs| logstash --> es
+    creatio -->|App logs| logstash
+    mlapi -->|Service logs| logstash
+    es --> kibana
+
+    prom -->|scrape| creatio
+    prom -->|scrape| mlapi
+    prom -->|dashboards| grafana
+
 ```
 
 ### 2. Authentication Flow (OIDC)
