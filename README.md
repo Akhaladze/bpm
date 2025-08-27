@@ -1,46 +1,21 @@
-# Crm Bpm Ansible Project
+# Creatio Deployment Guide
 
-## Included content/ Directory Structure
+To deploy Creatio, run the following script:
 
-The directory structure follows best practices recommended by the Ansible community. Feel free to customize this template according to your specific project requirements.
-
-```
- ansible-project/
- |── .devcontainer/
- |    └── docker/
- |        └── devcontainer.json
- |    └── podman/
- |        └── devcontainer.json
- |    └── devcontainer.json
- |── .github/
- |    └── workflows/
- |        └── tests.yml
- |    └── ansible-code-bot.yml
- |── .vscode/
- |    └── extensions.json
- |── collections/
- |   └── requirements.yml
- |   └── ansible_collections/
- |       └── project_org/
- |           └── project_repo/
- |               └── README.md
- |               └── roles/sample_role/
- |                         └── README.md
- |                         └── tasks/main.yml
- |── inventory/
- |   └── groups_vars/
- |   └── host_vars/
- |   └── hosts.yml
- |── ansible-navigator.yml
- |── ansible.cfg
- |── devfile.yaml
- |── linux_playbook.yml
- |── network_playbook.yml
- |── README.md
- |── site.yml
+```bash
+./build.sh
 ```
 
-## Compatible with Ansible-lint
+This will set up the necessary environment and start the deployment process.
 
-Tested with ansible-lint >=24.2.0 releases and the current development version of ansible-core.
-# bpm
+## Prerequisites
+
+- Ensure you have execution permissions for `build.sh`.
+- Verify all required dependencies are installed.
+
+## Usage
+
+```bash
+chmod +x build.sh
+./build.sh
+```
