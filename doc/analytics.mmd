@@ -1,0 +1,20 @@
+flowchart TB
+    creatio[Creatio BPM]
+    events[Events/Logs]
+    etl[ETL (Logstash/Transform)]
+    es[(Elasticsearch)]
+    kibana[Kibana Dashboards]
+    pg[(PostgreSQL OLTP)]
+    redis[(Redis Cache)]
+    ml[ML/AI Service (Inference/Training)]
+    artifacts[(Models/Embeddings)]
+
+    creatio -->|OLTP| pg
+    creatio -->|Cache| redis
+
+    creatio -->|App Logs/Events| events --> etl --> es
+    es --> kibana
+
+    es <-->|Train/Evaluate| ml
+    ml --> artifacts
+    creatio <-->|Infer (REST)| ml

@@ -1,0 +1,8 @@
+flowchart LR
+    dev[Developer Push/PR] --> gh[GitHub Repo]
+    gh --> actions[GitHub Actions CI]
+    actions --> build[Docker Build & Test]
+    build --> registry[(Container Registry)]
+    registry --> cd[CD (Ansible/Compose)]
+    cd --> srv[Prod Server]
+    srv --> stack[Docker Compose Stack<br/>NGINX, Creatio, Redis, PostgreSQL, ML API]

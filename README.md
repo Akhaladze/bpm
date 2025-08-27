@@ -1,21 +1,10 @@
-# Creatio Deployment Guide
+# Creatio BPM 8.2.3 — Deployment Guide
 
-To deploy Creatio, run the following script:
+This repository contains an enterprise-ready deployment of **Creatio Sales Enterprise 8.2.3** with optional **NGINX, Keycloak SSO, Elasticsearch, and ML/AI service**.  
+Infra: Docker Compose, Redis, PostgreSQL, NGINX; optional: Keycloak, ELK, Prometheus/Grafana, ML API.
 
-```bash
-./build.sh
-```
-
-This will set up the necessary environment and start the deployment process.
-
-## Prerequisites
-
-- Ensure you have execution permissions for `build.sh`.
-- Verify all required dependencies are installed.
-
-## Usage
+## Quick Start
 
 ```bash
 chmod +x build.sh
-./build.sh
-```
+./build.sh up
