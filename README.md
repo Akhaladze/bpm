@@ -10,20 +10,41 @@ chmod +x build.sh
 ./build.sh up
 
 
-```mermaid
-sequenceDiagram
-    participant U as User (Browser)
-    participant N as NGINX (Reverse Proxy)
-    participant K as Keycloak (OIDC)
-    participant C as Creatio BPM
+## 📊 Architecture Diagrams
 
-    U->>N: GET /app
-    N-->>U: 302 Redirect to Keycloak /authorize
-    U->>K: Login (username/password, MFA if enabled)
-    K-->>U: Auth Code (OIDC)
-    U->>N: /callback?code=...
-    N->>K: Exchange code for tokens
-    K-->>N: id_token + access_token (JWT)
-    N->>C: Forward request + JWT (Authorization: Bearer ...)
-    C-->>N: 200 OK (HTML/JSON)
-    N-->>U: 200 OK (content)
+### 1. System Architecture
+
+```mermaid
+flowchart TB
+    user[User / Browser]
+    mobile[Mobile Client]
+    api[3rd-party Service]
+
+    subgraph Edge["Ingress & Security"]
+      nginx[NGINX Reverse Proxy]
+      keycloak[Keycloak SSO / OIDC]
+    end
+
+    subgraph App["Application Layer"]
+      creatio[Creatio BPM 8.2.3]
+      redis[(Redis Cache)]
+    end
+
+    subgraph Data["Data Stores & Search"]
+      pg[(PostgreSQL)]
+      es[(Elasticsearch)]
+    end
+
+    subgraph ML["ML/AI Services"]
+      mlapi[ML API (Python/FastAPI)]
+    end
+
+    user --> nginx
+    mobile --> nginx
+    api --> nginx
+    nginx --> keycloak
+    nginx --> creatio
+    creatio --> redis
+    creatio --> pg
+    creatio --> es
+    creatio --> mlapi
