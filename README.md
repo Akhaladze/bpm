@@ -15,6 +15,7 @@ chmod +x build.sh
 ### 1. System Architecture
 
 ```mermaid
+
 flowchart TB
     user[User / Browser]
     mobile[Mobile Client]
